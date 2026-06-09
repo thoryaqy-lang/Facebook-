@@ -1,0 +1,73 @@
+const db = require("../config/db");
+
+exports.createPost = async (req, res) => {
+try {
+const { content, user_id } = req.body;
+const image = req.file ? req.file.filename : null;
+
+await db.query(
+'INSERT INTO posts (user_id, content, image) VALUES (?, ?, ?)',
+[user_id, content, image]
+);
+
+res.json({ success: true, message: "Post created successfully" });
+} catch (error) {
+console.error("خطأ في السيرفر:", error);
+res.status(500).json({ error: error.message });
+}
+};
+
+exports.deletePost = async (req, res) => {
+try {
+const postId = req.params.id;
+
+await db.query('DELETE FROM comments WHERE post_id = ?', [postId]);
+await db.query('DELETE FROM posts WHERE id = ?', [postId]);
+
+res.json({ success: true, message: "تم حذف المنشور بنجاح" });
+} catch (error) {
+res.status(500).json({ success: false, message: "خطأ في الحذف" });
+}
+};
+
+exports.getFeed = async (req, res) => {
+try {
+const sql = SELECT posts.*, users.first_name, users.last_name FROM posts JOIN users ON posts.user_id = users.id ORDER BY posts.id DESC;
+
+const [posts] = await db.query(sql);
+
+for (let post of posts) {
+const [comments] = await db.query(
+SELECT comments.*, users.first_name FROM comments JOIN users ON comments.user_id = users.id WHERE post_id = ?,
+[post.id]
+);
+
+post.comments = comments;
+post.likes = post.likes || 0;
+}
+
+res.json(posts);
+} catch (error) {
+console.error("Error in getFeed:", error);
+res.status(500).json({ error: "خطأ في جلب البيانات" });
+}
+};
+
+exports.addComment = async (req, res) => {
+try {
+const { post_id, content } = req.body;
+const user_id = 1;
+
+await db.query(
+"INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)",
+[post_id, user_id, content]
+);
+
+res.json({ success: true, message: "تم إضافة التعليق" });
+} catch (error) {
+console.error("Error adding comment:", error);
+res.status(500).json({ error: error.message });
+}
+};
+
+

@@ -1,0 +1,41 @@
+const express = require("express");
+const router = express.Router();
+
+const postController = require("../controllers/postController");
+const db = require("../config/db");
+
+// جلب المنشورات
+router.get("/feed", postController.getFeed);
+
+// إنشاء منشور
+router.post("/create", postController.createPost);
+
+// إضافة تعليق
+router.post("/comments", postController.addComment);
+
+// حذف منشور
+router.delete("/posts/:id", postController.deletePost);
+
+// إعجاب
+router.post("/like/:id", async (req, res) => {
+try {
+const postId = req.params.id;
+
+await db.query(
+"UPDATE posts SET likes = COALESCE(likes,0) + 1 WHERE id = ?",
+[postId]
+);
+
+res.json({ success: true });
+
+} catch (error) {
+console.error(error);
+res.status(500).json({
+success: false,
+message: "حدث خطأ"
+});
+}
+});
+
+module.exports = router;
+
