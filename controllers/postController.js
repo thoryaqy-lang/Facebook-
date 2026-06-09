@@ -177,3 +177,118 @@ exports.login = async (req, res) => {
         });
     }
 };
+exports.getProfile = async (req, res) => {
+    try {
+
+        const userId = req.params.id;
+
+        const [users] = await db.query(
+            `SELECT
+                id,
+                first_name,
+                last_name,
+                email,
+                bio,
+                profile_picture,
+                cover_picture
+             FROM users
+             WHERE id = ?`,
+            [userId]
+        );
+
+        if (users.length === 0) {
+            return res.status(404).json({
+                error: "المستخدم غير موجود"
+            });
+        }
+
+        const [posts] = await db.query(
+            `SELECT *
+             FROM posts
+             WHERE user_id = ?
+             ORDER BY id DESC`,
+            [userId]
+        );
+
+        res.json({
+            user: users[0],
+            posts
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            error: error.message
+        });
+    }
+};
+
+exports.updateProfile = async (req, res) => {
+
+    try {
+
+        const {
+            user_id,
+            first_name,
+            last_name,
+            bio
+        } = req.body;
+
+        const profile_picture =
+            req.file
+                ? req.file.filename
+                : null;
+
+        if (profile_picture) {
+
+            await db.query(
+                `UPDATE users
+                 SET
+                    first_name = ?,
+                    last_name = ?,
+                    bio = ?,
+                    profile_picture = ?
+                 WHERE id = ?`,
+                [
+                    first_name,
+                    last_name,
+                    bio,
+                    profile_picture,
+                    user_id
+                ]
+            );
+
+        } else {
+
+            await db.query(
+                `UPDATE users
+                 SET
+                    first_name = ?,
+                    last_name = ?,
+                    bio = ?
+                 WHERE id = ?`,
+                [
+                    first_name,
+                    last_name,
+                    bio,
+                    user_id
+                ]
+            );
+        }
+
+        res.json({
+            success: true,
+            message: "تم تحديث الملف الشخصي"
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            error: error.message
+        });
+    }
+};

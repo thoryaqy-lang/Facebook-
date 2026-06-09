@@ -303,11 +303,48 @@ color: #1877f2 !important;
 </div>
 </div>
 
-<div id="postsFeed">
+</div><div id="postsFeed">
 </div>
 
 </div>
+<div id="profileBox"
+     style="display:none;
+            background:white;
+            padding:15px;
+            margin-top:20px;
+            border-radius:8px;">
 
+<h3>الملف الشخصي</h3>
+
+<input
+    id="profileFirstName"
+    placeholder="الاسم الأول">
+
+<br><br>
+
+<input
+    id="profileLastName"
+    placeholder="اسم العائلة">
+
+<br><br>
+
+<textarea
+    id="profileBio"
+    placeholder="نبذة شخصية"></textarea>
+
+<br><br>
+
+<input
+    type="file"
+    id="profileImage">
+
+<br><br>
+
+<button onclick="saveProfile()">
+حفظ الملف الشخصي
+</button>
+
+</div>
 <div class="sidebar right-sidebar">
 <h4 style="color: var(--fb-text-gray); margin: 15px 0;">جهات الاتصال</h4>
 <ul>
@@ -420,11 +457,13 @@ async function submitPost() {
     const formData = new FormData();
 formData.append('content', content);
 
-const user =
+    JSON.parse(
+        localStorage.getItem('user')
+    );const user =
     JSON.parse(
         localStorage.getItem('user')
     );
-
+console.log("USER =", user);
 if (!user) {
     alert('يجب تسجيل الدخول أولاً');
     return;
@@ -459,7 +498,8 @@ async function likePost(postId) {
     if (response.ok) {
 
         const btn =
-            document.getElementById(`like-btn-${postId}`);
+                'profileBox'
+).style.display = 'block';document.getElementById(`like-btn-${postId}`);
 
         if (btn) {
             btn.classList.add('liked');
@@ -535,7 +575,8 @@ function openChat(name) {
 async function registerUser() {
 
     const first_name =
-        document.getElementById('firstName').value;
+            'profileBox'
+).style.display = 'block';document.getElementById('firstName').value;
 
     const last_name =
         document.getElementById('lastName').value;
@@ -654,11 +695,113 @@ document.addEventListener(
     () => {
 
         updateUserUI();
-
+loadProfile();
         loadPosts();
     }
 );
 
+async function loadProfile() {
+
+    const user =
+        JSON.parse(
+            localStorage.getItem('user')
+        );
+
+    if (!user) return;
+
+    const response =
+        await fetch(
+            `/profile/${user.id}`
+        );
+
+    const data =
+        await response.json();
+
+    document.getElementById(
+        'profileFirstName'
+    ).value =
+        data.user.first_name || '';
+
+    document.getElementById(
+        'profileLastName'
+    ).value =
+        data.user.last_name || '';
+
+    document.getElementById(
+        'profileBio'
+    ).value =
+        data.user.bio || '';
+console.log("SHOW PROFILE");
+    document.getElementById(
+        'profileBox'
+    ).style.display = 'block';
+}
+
+async function saveProfile() {
+
+    const user =
+        JSON.parse(
+            localStorage.getItem('user')
+        );
+
+    const formData =
+        new FormData();
+
+    formData.append(
+        'user_id',
+        user.id
+    );
+
+    formData.append(
+        'first_name',
+        document.getElementById(
+            'profileFirstName'
+        ).value
+    );
+
+    formData.append(
+        'last_name',
+        document.getElementById(
+            'profileLastName'
+        ).value
+    );
+
+    formData.append(
+        'bio',
+        document.getElementById(
+            'profileBio'
+        ).value
+    );
+
+    const image =
+        document.getElementById(
+            'profileImage'
+        ).files[0];
+
+    if (image) {
+        formData.append(
+            'profile_picture',
+            image
+        );
+    }
+
+    const response =
+        await fetch(
+            '/profile/update',
+            {
+                method: 'POST',
+                body: formData
+            }
+        );
+
+    const data =
+        await response.json();
+
+    alert(
+        data.message ||
+        'تم الحفظ'
+    );
+}
 </script>
 </body>
 </html>
