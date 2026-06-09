@@ -65,12 +65,14 @@ exports.getFeed = async (req, res) => {
 
 exports.addComment = async (req, res) => {
     try {
-        const { post_id, content } = req.body;
-
+const {
+    post_id,
+    user_id,
+    content
+} = req.body;
         await db.query(
             "INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)",
-            [post_id, 1, content]
-        );
+[post_id, user_id, content]        );
 
         res.json({
             success: true

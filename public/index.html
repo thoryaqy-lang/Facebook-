@@ -417,9 +417,22 @@ async function submitPost() {
     const image = document.getElementById('postImage').files[0];
 
     const formData = new FormData();
-    formData.append('content', content);
-    formData.append('user_id', 1);
+formData.append('content', content);
 
+const user =
+    JSON.parse(
+        localStorage.getItem('user')
+    );
+
+if (!user) {
+    alert('يجب تسجيل الدخول أولاً');
+    return;
+}
+
+formData.append(
+    'user_id',
+    user.id
+);
     if (image) {
         formData.append('image', image);
     }
@@ -466,11 +479,16 @@ async function postComment(postId) {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-            post_id: postId,
-            content: content
-        })
-    });
+const user =
+    JSON.parse(
+        localStorage.getItem('user')
+    );
+
+body: JSON.stringify({
+    post_id: postId,
+    user_id: user.id,
+    content: content
+})    });
 
     if (response.ok) {
         loadPosts();
