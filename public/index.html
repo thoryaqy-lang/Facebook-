@@ -227,6 +227,7 @@ color: #1877f2 !important;
 
 <div class="create-post">
 <div class="create-post-top">
+<div id="userInfo" style="margin-bottom:10px;font-weight:bold;"></div>
 
     <div class="profile-pic">
         <i class="fa-solid fa-user"></i>
@@ -598,11 +599,12 @@ async function loginUser() {
             JSON.stringify(data.user)
         );
 
-        alert(
-            'مرحباً ' +
-            data.user.first_name
-        );
+updateUserUI();
 
+alert(
+    'مرحباً ' +
+    data.user.first_name
+);
     } else {
 
         alert(
@@ -611,9 +613,53 @@ async function loginUser() {
         );
     }
 }
-document.addEventListener(
     'DOMContentLoaded',
     loadPosts
+);
+
+function updateUserUI() {
+
+    const user =
+        JSON.parse(
+            localStorage.getItem('user')
+        );
+
+    if (!user) return;
+
+    document.getElementById(
+        'registerBox'
+    ).style.display = 'none';
+
+    document.getElementById(
+        'loginBox'
+    ).style.display = 'none';
+
+    document.getElementById(
+        'userInfo'
+    ).innerHTML =
+        `
+        مرحباً ${user.first_name}
+        <button onclick="logoutUser()">
+            تسجيل خروج
+        </button>
+        `;
+}
+
+function logoutUser() {
+
+    localStorage.removeItem('user');
+
+    location.reload();
+}
+
+document.addEventListener(
+    'DOMContentLoaded',
+    () => {
+
+        updateUserUI();
+
+        loadPosts();
+    }
 );
 </script>
 </body>
