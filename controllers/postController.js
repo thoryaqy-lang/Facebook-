@@ -143,3 +143,35 @@ exports.register = async (req, res) => {
         });
     }
 };
+exports.login = async (req, res) => {
+    try {
+
+        const { email, password } = req.body;
+
+        const [users] = await db.query(
+            `SELECT * FROM users
+             WHERE email = ?
+             AND password_hash = ?`,
+            [email, password]
+        );
+
+        if (users.length === 0) {
+            return res.status(401).json({
+                error: "البريد أو كلمة المرور غير صحيحة"
+            });
+        }
+
+        res.json({
+            success: true,
+            user: users[0]
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            error: error.message
+        });
+    }
+};

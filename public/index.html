@@ -250,6 +250,29 @@ color: #1877f2 !important;
 </button>
 
 </div>
+
+<div id="loginBox" style="margin-bottom:15px;padding:10px;background:white;border-radius:8px;">
+
+<h3>تسجيل الدخول</h3>
+
+<input
+    id="loginEmail"
+    placeholder="البريد الإلكتروني">
+
+<br><br>
+
+<input
+    id="loginPassword"
+    type="password"
+    placeholder="كلمة المرور">
+
+<br><br>
+
+<button onclick="loginUser()">
+    تسجيل الدخول
+</button>
+
+</div>
         <textarea id="postContent" placeholder="بماذا تفكر؟"></textarea>
 
         <input
@@ -519,6 +542,50 @@ async function registerUser() {
     alert(data.message || 'تم');
 }
 
+async function loginUser() {
+
+    const email =
+        document.getElementById('loginEmail').value;
+
+    const password =
+        document.getElementById('loginPassword').value;
+
+    const response = await fetch('/login', {
+
+        method: 'POST',
+
+        headers: {
+            'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify({
+            email,
+            password
+        })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+
+        localStorage.setItem(
+            'user',
+            JSON.stringify(data.user)
+        );
+
+        alert(
+            'مرحباً ' +
+            data.user.first_name
+        );
+
+    } else {
+
+        alert(
+            data.error ||
+            'فشل تسجيل الدخول'
+        );
+    }
+}
 document.addEventListener(
     'DOMContentLoaded',
     loadPosts

@@ -26,7 +26,6 @@ router.post(
     "/login",
     postController.login
 );
-
 // إنشاء منشور
 router.post(
     "/create",
