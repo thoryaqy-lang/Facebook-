@@ -18,6 +18,11 @@ const upload = multer({ storage });
 // جلب المنشورات
 router.get("/feed", postController.getFeed);
 
+router.post(
+    "/register",
+    postController.register
+);
+
 // إنشاء منشور
 router.post(
     "/create",

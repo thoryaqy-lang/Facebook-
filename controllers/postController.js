@@ -107,3 +107,39 @@ exports.deletePost = async (req, res) => {
         });
     }
 };
+exports.register = async (req, res) => {
+    try {
+
+        const {
+            first_name,
+            last_name,
+            email,
+            password
+        } = req.body;
+
+        await db.query(
+            `INSERT INTO users
+            (first_name, last_name, email, password_hash)
+            VALUES (?, ?, ?, ?)`,
+            [
+                first_name,
+                last_name,
+                email,
+                password
+            ]
+        );
+
+        res.json({
+            success: true,
+            message: "تم إنشاء الحساب"
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            error: error.message
+        });
+    }
+};
