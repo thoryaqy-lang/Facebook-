@@ -59,6 +59,7 @@ message: "حدث خطأ"
 });
 }
 });
+
 router.get(
     "/profile/:id",
     postController.getProfile
@@ -69,4 +70,5 @@ router.post(
     upload.single("profile_picture"),
     postController.updateProfile
 );
+
 module.exports = router;
