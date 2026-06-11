@@ -17,9 +17,7 @@ exports.createPost = async (req, res) => {
             success: true,
             message: "تم إنشاء المنشور"
         });
-
-    }
-catch (error) {
+} catch (error) {
     console.error("FEED ERROR:", error);
 
     res.status(500).json({
