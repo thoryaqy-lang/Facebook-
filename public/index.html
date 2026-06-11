@@ -305,8 +305,10 @@ color: #1877f2 !important;
 
 </div><div id="postsFeed">
 </div>
+
+<h1>HIT MAN</h1>
 <div id="profileBox"
-     style="display:none;
+     style="display:block;
             background:white;
             padding:15px;
             margin-top:20px;
@@ -677,15 +679,17 @@ function logoutUser() {
     localStorage.removeItem('user');
 
     location.reload();
-}
-document.addEventListener(                                        'DOMContentLoaded',
+document.addEventListener(
+    'DOMContentLoaded',
     () => {
 
         updateUserUI();
 
         loadPosts();
-    }                                                         );
 
+        document.getElementById('profileBox').style.display = 'block';
+    }
+);
 async function loadProfile() {
 
     const user =
