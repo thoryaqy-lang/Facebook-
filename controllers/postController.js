@@ -18,12 +18,15 @@ exports.createPost = async (req, res) => {
             message: "تم إنشاء المنشور"
         });
 
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            error: error.message
-        });
     }
+catch (error) {
+    console.error("FEED ERROR:", error);
+
+    res.status(500).json({
+        error: error.message,
+        code: error.code
+    });
+}
 };
 exports.getFeed = async (req, res) => {
     try {
